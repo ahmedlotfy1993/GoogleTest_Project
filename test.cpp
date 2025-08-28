@@ -117,15 +117,17 @@ public:
 	MOCK_METHOD(void, disconnect, (), (override));
 	MOCK_METHOD(float, getSalary, (int) , (const, override));
 	MOCK_METHOD(void, updateSalary, (int, float), (override));
-	MOCK_METHOD((std::vector<Employee>), getSalariesRange, (float), (override));
-	MOCK_METHOD((std::vector<Employee>), getSalariesRange, (float, float), (override));
+	MOCK_METHOD((std::vector<Employee>), getSalariesRange, (float), (const, override));
+	MOCK_METHOD((std::vector<Employee>), getSalariesRange, (float, float), (const, override));
 };
 
 MockDatabaseConnection::MockDatabaseConnection(std::string serverAddress) : IDatabaseConnection(serverAddress)
 {
 
 }
-
+/*!
+ * List the expected calls inside the test case body before making the calls to the functions explicitly or implicitly
+*/
 TEST(TestEmployeeManager, TestConnection)
 {
     MockDatabaseConnection dbConnection("dummyConnection");
@@ -134,7 +136,9 @@ TEST(TestEmployeeManager, TestConnection)
 
     EmployeeManager employeeManager(&dbConnection);
 }
-
+/*!
+ *  The test case show when don't care about input parameters by using matchers testing::_
+*/
 TEST(TestEmployeeManager, TestUpdateSalary)
 {
     MockDatabaseConnection dbConnection("dummyConnection");
@@ -146,7 +150,10 @@ TEST(TestEmployeeManager, TestUpdateSalary)
 
     employeeManager.setSalary(50, 6000);
 }
-
+/*!
+ *  The test case show when don't care about input parameters by using matchers testing::_ .
+ * Use WillOnce to expect the return value by testing::Return()
+*/
 TEST(TestEmployeeManager, TestGetSalary)
 {
     const int employeeId = 50;
@@ -162,7 +169,38 @@ TEST(TestEmployeeManager, TestGetSalary)
 
     ASSERT_EQ(salary, returnedSalary);
 }
-
+/*!
+* Use WillOnce to force throwing an exception and use ASSERT_THROW to execute the function call and test the throw
+*/
+TEST(TestEmployeeManager, TestConnectionError){
+	MockDatabaseConnection dbConnection("dummyConnection");
+    EXPECT_CALL(dbConnection, connect()).WillOnce(testing::Throw(std::runtime_error("Dummy error")));
+	ASSERT_THROW(EmployeeManager employeeManager(&dbConnection), std::runtime_error);
+}
+/*!
+* Use ACTION macro to specify action like a function consist of multiple lines.
+*/
+ACTION(myAction){
+	std::cout << "Throwing an error\n";
+	throw std::runtime_error("Dummy error"");
+}
+TEST(TestEmployeeManager, TestConnectionErrorAction){
+	MockDatabaseConnection dbConnection("dummyConnection");
+    EXPECT_CALL(dbConnection, connect()).WillOnce(myAction());
+	ASSERT_THROW(EmployeeManager employeeManager(&dbConnection), std::runtime_error);
+}
+/*!
+* Use testing::Invoke() which forward the parameters from mocked function to the callable inside testing::Invoke
+*/
+void myAction(void){
+	std::cout << "Throwing an error\n";
+	throw std::runtime_error("Dummy error"");
+}
+TEST(TestEmployeeManager, TestConnectionErrorActionInvoke){
+	MockDatabaseConnection dbConnection("dummyConnection");
+    EXPECT_CALL(dbConnection, connect()).WillOnce(testing::Invoke(myAction));
+	ASSERT_THROW(EmployeeManager employeeManager(&dbConnection), std::runtime_error);
+}
 TEST(TestEmployeeManager, TestGetSalaryInRange)
 {
     const int low = 5000, high = 8000;
