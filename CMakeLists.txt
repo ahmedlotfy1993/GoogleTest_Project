@@ -17,10 +17,16 @@ if(NOT googletest_POPULATED)
 	#GO TO SUB DIRECTORIES AND BUILD THEM
 	add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BUILD_DIR})
 endif()
-#######################################Google test#######################################
-add_library(SumLibrary STATIC LibraryCode.cpp LibraryCode.hpp)
 
+
+#######################################STATIC LIBRARIES#######################################
+add_library(SumLibrary STATIC LibraryCode.cpp LibraryCode.hpp)
+add_library(databaseConnectionLibrary STATIC IDatabaseConnection.cpp)
+add_library(employeeManagerLibrary STATIC EmployeeManager.cpp)
+set(ACTUAL_LIBRARIES SumLibrary databaseConnectionLibrary employeeManagerLibrary)
+
+#######################################TARGETS AND LINKS TO LIBRARIES#######################################
 add_executable(mainApp main.cpp)
 add_executable(testApp test.cpp)
-target_link_libraries(mainApp SumLibrary)
-target_link_libraries(testApp SumLibrary gtest_main gmock_main pthread)
+target_link_libraries(mainApp ${ACTUAL_LIBRARIES})
+target_link_libraries(testApp ${ACTUAL_LIBRARIES} gtest_main gmock_main pthread)
