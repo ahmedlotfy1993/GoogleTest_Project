@@ -21,7 +21,6 @@ It demonstrates how to write unit tests for a simple library using Google Test a
 
 ## Build Instructions
 
-1. Create a build directory:
 ```bash
 mkdir build
 cd build
