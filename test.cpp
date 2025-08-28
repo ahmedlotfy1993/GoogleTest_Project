@@ -201,6 +201,9 @@ TEST(TestEmployeeManager, TestConnectionErrorActionInvoke){
     EXPECT_CALL(dbConnection, connect()).WillOnce(testing::Invoke(myAction));
 	ASSERT_THROW(EmployeeManager employeeManager(&dbConnection), std::runtime_error);
 }
+/*
+ * Using matchers to test the range of the function return
+*/
 TEST(TestEmployeeManager, TestGetSalaryInRange)
 {
     const int low = 5000, high = 8000;
@@ -220,7 +223,7 @@ TEST(TestEmployeeManager, TestGetSalaryInRange)
     for(auto it=returnedMap.begin(); it!=returnedMap.end(); ++it)
     {
         std::cout << it->first << " " << it->second << '\n';
-        ASSERT_THAT(it->second, testing::AnyOf(testing::Gt(low), testing::Lt(high-3000)));
+        ASSERT_THAT(it->second, testing::AllOf(testing::Gt(low), testing::Lt(high)));
     }
 }
 
