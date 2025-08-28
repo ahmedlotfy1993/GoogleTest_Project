@@ -5,11 +5,11 @@ It demonstrates how to write unit tests for a simple library using Google Test a
 
 ## Project Structure
 .
-- CMakeLists.txt #CMake build script
-- LibraryCode.cpp #Example library implementation
-- LibraryCode.hpp #Example library header
-- main.cpp #Example main application
-- test.cpp #Google Test unit tests
+- CMakeLists.txt # CMake build script
+- LibraryCode.cpp # Example library implementation
+- LibraryCode.hpp # Example library header
+- main.cpp # Example main application
+- test.cpp # Google Test unit tests
 
 ## Prerequisites
 
