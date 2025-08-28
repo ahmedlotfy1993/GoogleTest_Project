@@ -1,4 +1,6 @@
 #include "LibraryCode.hpp"
+#include "IDatabaseConnection.hpp"
+#include "EmployeeManager.hpp"
 #include <iostream>
 
 int main(void){
