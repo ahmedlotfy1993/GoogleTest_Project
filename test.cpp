@@ -2,8 +2,11 @@
 #include <gmock/gmock.h>
 #include <iostream>
 #include <vector>
+#include <map>
 #include <utility>
 #include "LibraryCode.hpp"
+#include "IDatabaseConnection.hpp"
+#include "EmployeeManager.hpp"
 
 TEST(TestSuite, TestName){
 	int summation = sum(2,4);
@@ -79,6 +82,9 @@ std::vector<std::pair<int, bool>> my_vec{{-50, false}, {4, false}, {5, true}, {7
 INSTANTIATE_TEST_SUITE_P(ANY_NAME, ValidatorFixture, testing::ValuesIn(my_vec));
 
 /***************************************************USING GMOCK*************************************************************************/
+/*!
+ * This useful to isolate a class from it's dependancies, by  extending a class and mocking it's method(override) by MOCK_METHOD
+*/
 class SomeClass{
 	public:
 		SomeClass()=default;
@@ -86,16 +92,98 @@ class SomeClass{
 			std::cout << "Say Something" << std::endl;
 		}
 };
+/*! 
+* Use parantheis for complex types or when the input are more than 2
+* It's optional to mention the specification for the mocked method at the end parameter(const, noexcept)
+* To test the function is called you can use EXPECT_CALL with the child class and the overriden method and expect how times will be called.
+*/
 class MockedClass: public SomeClass{
 	public:
 		MockedClass()=default;
-		/* override the method from parent class*/
 		MOCK_METHOD(void, some_method, ());
 };
 TEST(Test_Gmock, Simple_Gmock){
 	MockedClass mc;
 	EXPECT_CALL(mc,some_method()).Times(1);
 	mc.some_method();
+}
+
+class MockDatabaseConnection : public IDatabaseConnection
+{
+public:
+    MockDatabaseConnection(std::string serverAddress);
+
+	MOCK_METHOD(void, connect, (), (override));
+	MOCK_METHOD(void, disconnect, (), (override));
+	MOCK_METHOD(float, getSalary, (int) , (const, override));
+	MOCK_METHOD(void, updateSalary, (int, float), (override));
+	MOCK_METHOD((std::vector<Employee>), getSalariesRange, (float), (override));
+	MOCK_METHOD((std::vector<Employee>), getSalariesRange, (float, float), (override));
+};
+
+MockDatabaseConnection::MockDatabaseConnection(std::string serverAddress) : IDatabaseConnection(serverAddress)
+{
+
+}
+
+TEST(TestEmployeeManager, TestConnection)
+{
+    MockDatabaseConnection dbConnection("dummyConnection");
+    EXPECT_CALL(dbConnection, connect());
+    EXPECT_CALL(dbConnection, disconnect());
+
+    EmployeeManager employeeManager(&dbConnection);
+}
+
+TEST(TestEmployeeManager, TestUpdateSalary)
+{
+    MockDatabaseConnection dbConnection("dummyConnection");
+    EXPECT_CALL(dbConnection, connect());
+    EXPECT_CALL(dbConnection, disconnect());
+    EXPECT_CALL(dbConnection, updateSalary(testing::_, testing::_)).Times(1);   
+
+    EmployeeManager employeeManager(&dbConnection);
+
+    employeeManager.setSalary(50, 6000);
+}
+
+TEST(TestEmployeeManager, TestGetSalary)
+{
+    const int employeeId = 50;
+    const float salary = 6100.0;
+    MockDatabaseConnection dbConnection("dummyConnection");
+    EXPECT_CALL(dbConnection, connect());
+    EXPECT_CALL(dbConnection, disconnect());
+    EXPECT_CALL(dbConnection, getSalary(testing::_)).Times(1).WillOnce(testing::Return(salary));
+
+    EmployeeManager employeeManager(&dbConnection);
+
+    float returnedSalary = employeeManager.getSalary(employeeId);
+
+    ASSERT_EQ(salary, returnedSalary);
+}
+
+TEST(TestEmployeeManager, TestGetSalaryInRange)
+{
+    const int low = 5000, high = 8000;
+    std::vector<Employee> returnedVector{Employee{1, 5600, "John"},
+                                    Employee{2, 7000, "Jane"},
+                                    Employee{3, 6600, "Alex"}};
+
+    MockDatabaseConnection dbConnection("dummyConnection");
+    EXPECT_CALL(dbConnection, connect());
+    EXPECT_CALL(dbConnection, disconnect());
+    EXPECT_CALL(dbConnection, getSalariesRange(low, high)).WillOnce(testing::Return(returnedVector));
+
+    EmployeeManager employeeManager(&dbConnection);
+
+    std::map<std::string, float> returnedMap = employeeManager.getSalariesBetween(low, high);
+
+    for(auto it=returnedMap.begin(); it!=returnedMap.end(); ++it)
+    {
+        std::cout << it->first << " " << it->second << '\n';
+        ASSERT_THAT(it->second, testing::AnyOf(testing::Gt(low), testing::Lt(high-3000)));
+    }
 }
 
 int main(int argc, char** argv){
