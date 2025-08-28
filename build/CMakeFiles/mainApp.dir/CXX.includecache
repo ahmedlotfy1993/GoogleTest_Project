@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/ahmed93/GT/LibraryCode.hpp
+
+/home/ahmed93/GT/main.cpp
+LibraryCode.hpp
+/home/ahmed93/GT/LibraryCode.hpp
+iostream
+-
+

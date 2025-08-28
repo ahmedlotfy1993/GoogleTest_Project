@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/testApp.dir/test.cpp.o  -o testApp  libSumLibrary.a lib/libgtest_main.a lib/libgmock_main.a lib/libgmock.a lib/libgtest.a -lpthread 
