@@ -19,6 +19,15 @@ TEST(TestCountPositiveSuite, TestEmptyVec){
 	int num = CountPositives(in);
 	ASSERT_EQ(0, num);
 }
+/******************************************************************************USING TEST FIXTURE****************************************************************************/
+/*!
+* Override the setup and teardown method to avoid rewrite the same initial steps for every test case
+* The name of test suite should be with the name of the class which inherit from Test class
+* For every individual test case the setup and tear down are called
+* Virtual methods (incase your test fixture is being inherited ) call be called from SetUp and TearDown but can not called from the constructor and destructor
+* function can throw exception should be called from the TearDown not from the destructor of test case
+* static function set up test case and tear down test case are called once at the begin and at the end.
+*/
 class AccountTestFixture: public testing::Test{
 	public:
 		void SetUp() override;
@@ -48,6 +57,13 @@ TEST_F(AccountTestFixture, TestDeposit){
 TEST_F(AccountTestFixture, TestUnsuffecientdeposit){
 	ASSERT_THROW(account.withdraw(200), std::runtime_error);
 }
+
+/*****************************************************************USING PRAMETERIZED TESTS**************************************************************/
+/*!
+ * When tests bodies is the same but the input is different
+ * Extend the template class Testing with param class and the template arguments are your input format
+  * So we write it one time by calling instantiate test suite instead of write it over and over and give it the your input list and the class name for test suite
+*/
 class ValidatorFixture: public testing::TestWithParam<std::pair<int, bool>>{
 	protected:
 		Validator validator{5,10};
