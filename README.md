@@ -13,7 +13,7 @@ It demonstrates how to write unit tests for a simple library using Google Test a
 - EmployeeManager.cpp: **Example defination for upper layer object which composite one child class from IDatabaseConnection as a dependacy inversion**
 - EmployeeManager.hpp: **Example header for upper layer class**
 - main.cpp: **Example dummy main application**
-- test.cpp: **Google Test unit tests using gtest & gmock**
+- test.cpp: **Example test application for tests using gtest & gmock**
 
 ## Prerequisites
 
