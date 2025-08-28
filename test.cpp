@@ -62,7 +62,7 @@ TEST_F(AccountTestFixture, TestUnsuffecientdeposit){
 /*!
  * When tests bodies is the same but the input is different
  * Extend the template class Testing with param class and the template arguments are your input format
-  * So we write it one time by calling instantiate test suite instead of write it over and over and give it the your input list and the class name for test suite
+ * So we write it one time by calling instantiate test suite instead of write it over and over and give it the your input list and the class name for test suite
 */
 class ValidatorFixture: public testing::TestWithParam<std::pair<int, bool>>{
 	protected:
@@ -78,6 +78,7 @@ TEST_P(ValidatorFixture,TestValuesInRangeAndOutRange){
 std::vector<std::pair<int, bool>> my_vec{{-50, false}, {4, false}, {5, true}, {7, true}, {9,true}, {10, true}, {11, false}, {100, false}};
 INSTANTIATE_TEST_SUITE_P(ANY_NAME, ValidatorFixture, testing::ValuesIn(my_vec));
 
+/***************************************************USING GMOCK*************************************************************************/
 class SomeClass{
 	public:
 		SomeClass()=default;
@@ -88,6 +89,7 @@ class SomeClass{
 class MockedClass: public SomeClass{
 	public:
 		MockedClass()=default;
+		/* override the method from parent class*/
 		MOCK_METHOD(void, some_method, ());
 };
 TEST(Test_Gmock, Simple_Gmock){
