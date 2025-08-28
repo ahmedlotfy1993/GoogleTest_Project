@@ -4,7 +4,7 @@ This is a small educational C++ project to learn how to use **Google Test** with
 It demonstrates how to write unit tests for a simple library using Google Test and Google Mock.
 
 ## Project Structure
-.
+
 - CMakeLists.txt: **CMake build script**
 - LibraryCode.cpp: **Example library implementation**
 - LibraryCode.hpp: **Example library header**
